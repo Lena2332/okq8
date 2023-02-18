@@ -13,14 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('stations', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
+        Schema::create('destinations', function (Blueprint $table) {
             $table->id()->unsigned();
+            $table->string('name', 100);
             $table->string('lat', 45);
             $table->string('lng', 45);
-            $table->string('name', 255);
-            $table->json('possibilities');
-            $table->string('type', 45)->default('pit_stop');
         });
     }
 
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stations');
+        Schema::dropIfExists('destinations');
     }
 };
