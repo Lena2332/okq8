@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('experiences', function (Blueprint $table) {
             $table->id()->unsigned();
             $table->string('name', 255);
+            $table->string('image', 255);
+            $table->string('type', 55);
             $table->text('description');
             $table->enum('flagship', [0,1]);
             $table->bigInteger('station_id')->unsigned();
