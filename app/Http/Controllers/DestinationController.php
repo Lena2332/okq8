@@ -16,7 +16,7 @@ class DestinationController extends Controller
         $this->service = $service;
     }
 
-    public function getDestinations(int $start = 1, int $end = 5)
+    public function getDestinations(string $start = 'halmstad', string $end = 'stockholm')
     {
 
         $destinations = $this->service->getAllDestinations($start, $end);

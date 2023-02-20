@@ -20,10 +20,10 @@ class DestinationService extends Service
         $this->stationService = $stationService;
     }
 
-    public function getAllDestinations(int $start, int $end): iterable
+    public function getAllDestinations(string $start, string $end): iterable
     {
-        $startLat = $this->getLat($start);
-        $endLat = $this->getLat($end);
+        $startLat = $this->getLatByName($start);
+        $endLat = $this->getLatByName($end);
 
         // If car goes towards Åre
         $orderType = 'asc';
@@ -51,6 +51,12 @@ class DestinationService extends Service
     private function getLat(int $id)
     {
         $model = $this->model::select('lat')->where('id', $id)->first();
+        return $model->lat;
+    }
+
+    private function getLatByName(string $name)
+    {
+        $model = $this->model::select('lat')->where('name', 'LIKE', '%'. $name .'%')->first();
         return $model->lat;
     }
 
