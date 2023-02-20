@@ -23,8 +23,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('users', [UserController::class, 'getUsers']);
 
-Route::get('get_destinations/{start?}/{end?}', [DestinationController::class, 'getDestinations']);
+Route::middleware(['cors'])->group(function () {
 
-Route::post('calculate_stops', [BookingController::class, 'calculate']);
+    Route::get('get_destinations/{start?}/{end?}', [DestinationController::class, 'getDestinations']);
+
+    Route::post('calculate_stops', [BookingController::class, 'calculate']);
+});
+
+
 
 
