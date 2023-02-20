@@ -42,7 +42,7 @@ class BookingService extends Service
         $outputArr = [];
         $stationData = [];
         foreach ( $stopsArr as $k => $stop ) {
-            $stationData[$k] = $this->stationService->getStationById( (int) $stop['id'] );
+            $stationData[$k] = $this->stationService->getStationByName( $stop['name'] );
             $stationData[$k]['rest'] = $stop['rest_time'];
         }
 
@@ -126,6 +126,4 @@ class BookingService extends Service
         $wastedCapacity = ($this::SPENT * $destination) / 1000;
         return intval(round($startCapacity - $wastedCapacity));
     }
-
-
 }

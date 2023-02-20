@@ -90,14 +90,14 @@ class DatabaseSeeder extends Seeder
         \App\Models\Station::factory()
             ->count(8)
             ->state(new Sequence(
-                ['destination_id' => 1, 'lat' => '56.6691887', 'lng' => '12.8624076'],
-                ['destination_id' => 2, 'lat' => '57.756103', 'lng' => '14.0481716'],
-                ['destination_id' => 3, 'lat' => '58.4038594', 'lng' => '15.540734'],
-                ['destination_id' => 4, 'lat' => '56.8332166', 'lng' => '13.9061711'],
-                ['destination_id' => 5, 'lat' => '63.3971653', 'lng' => '13.0617457'],
-                ['destination_id' => 6, 'lat' => '59.326242', 'lng' => '17.8419703'],
-                ['destination_id' => 7, 'lat' => '60.6877031', 'lng' => '16.9025858'],
-                ['destination_id' => 8, 'lat' => '62.3959628', 'lng' => '17.0061553'],
+                ['name' => 'Halmstad', 'destination_id' => 1, 'lat' => '56.6691887', 'lng' => '12.8624076'],
+                ['name' => 'Jönköping', 'destination_id' => 2, 'lat' => '57.756103', 'lng' => '14.0481716'],
+                ['name' => 'Linköping', 'destination_id' => 3, 'lat' => '58.4038594', 'lng' => '15.540734'],
+                ['name' => 'Ljungby', 'destination_id' => 4, 'lat' => '56.8332166', 'lng' => '13.9061711'],
+                ['name' => 'Åre', 'destination_id' => 5, 'lat' => '63.3971653', 'lng' => '13.0617457'],
+                ['name' => 'Stockholm', 'destination_id' => 6, 'lat' => '59.326242', 'lng' => '17.8419703'],
+                ['name' => 'Gävle', 'destination_id' => 7, 'lat' => '60.6877031', 'lng' => '16.9025858'],
+                ['name' => 'Sundsvall', 'destination_id' => 8, 'lat' => '62.3959628', 'lng' => '17.0061553'],
             ))->create();
 
         \App\Models\Experience::truncate();

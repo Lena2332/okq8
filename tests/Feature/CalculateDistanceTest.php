@@ -18,23 +18,23 @@ class CalculateDistanceTest extends TestCase
         $response = $this->postJson('api/calculate_stops', [
             'stops' => [
                 [
-                    'id' => '1',
+                    'name' => 'halmstad',
                     'rest_time' => 0
                 ],
-                [
-                   'id' => '2',
-                   'rest_time' => 20
-               ],
                [
-                   'id' => '3',
+                   'name' => 'Ljungby',
                    'rest_time' => 10
                ],
                [
-                   'id' => '4',
+                   'name' => 'Linköping',
+                   'rest_time' => 20
+               ],
+               [
+                   'name' => 'Stockholm',
                    'rest_time' => 40
                ],
                [
-                   'id' => '5',
+                   'name' => 'Åre',
                    'rest_time' => 0
                ]
             ]

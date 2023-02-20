@@ -26,6 +26,12 @@ class StationService extends Service
         return $this->mapper($station);
     }
 
+    public function getStationByName(string $name)
+    {
+        $station = $this->model->where('name', 'LIKE', '%' . $name . '%')->first();
+        return $this->mapper($station);
+    }
+
     public function findBetween(string $from, string $to)
     {
         $stations = $this->model->where(
