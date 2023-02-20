@@ -15,7 +15,7 @@ class GetDestinationTest extends TestCase
      */
     public function test_example()
     {
-        $response = $this->get('api/get_destinations/1/5');
+        $response = $this->get('api/get_destinations/5/1');
 
         $response->assertStatus(200);
     }

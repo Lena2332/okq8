@@ -20,21 +20,57 @@ class StationService extends Service
         $this->experienceService = $experienceService;
     }
 
-    public function mapper( $stations ): array
+    public function getStationById(int $id)
+    {
+        $station = $this->model->where('id', $id)->first();
+        return $this->mapper($station);
+    }
+
+    public function findBetween(string $from, string $to)
+    {
+        $stations = $this->model->where(
+            [
+                [ 'lat', '>', $from ],
+                [ 'lat', '<', $to]
+        ]
+        )->orWhere(
+            [
+                [ 'lat', '<', $from ],
+                [ 'lat', '>', $to]
+            ]
+        )->get();
+
+        return $this->prepareStationsList($stations, true);
+    }
+
+    public function prepareStationsList( $stations, $withDestination = false )
     {
         $outputArr = [];
 
         foreach ( $stations as $station ) {
-            $outputArr[$station->id]['id'] = $station['id'];
-            $outputArr[$station->id]['name'] = $station['name'];
-            $outputArr[$station->id]['lat'] = $station['lat'];
-            $outputArr[$station->id]['lng'] = $station['lng'];
-            $outputArr[$station->id]['possibilities'] = $this->preparePossibilities(json_decode($station['possibilities'], true));
-            $outputArr[$station->id]['type'] = $station['type'];
-            $outputArr[$station->id]['experience'] = $this->experienceService->mapper($station->experience);
+            $outputArr[$station->id] = $this->mapper($station);
         }
 
         return $outputArr;
+    }
+
+    private function mapper( $station, $withDestination = false ): array
+    {
+        $stationData = [];
+        $stationData['id'] = $station['id'];
+        $stationData['name'] = $station['name'];
+        $stationData['lat'] = $station['lat'];
+        $stationData['lng'] = $station['lng'];
+        $stationData['point'] = $station['lat'] . ',' . $station['lng'];
+        $stationData['possibilities'] = $this->preparePossibilities(json_decode($station['possibilities'], true));
+        $stationData['type'] = $station['type'];
+        $stationData['experience'] = $this->experienceService->mapper($station->experience);
+        $stationData['destination_id'] = $station['destination_id'];
+        if ( $withDestination ) {
+            $stationData['destination_data'] = $station->destination;
+        }
+
+        return  $stationData;
     }
 
     // Add icon class

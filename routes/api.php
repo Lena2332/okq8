@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DestinationController;
+use \App\Http\Controllers\BookingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,5 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('users', [UserController::class, 'getUsers']);
 
 Route::get('get_destinations/{start?}/{end?}', [DestinationController::class, 'getDestinations']);
+
+Route::post('calculate_stops', [BookingController::class, 'calculate']);
 
 

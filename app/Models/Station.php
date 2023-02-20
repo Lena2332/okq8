@@ -18,4 +18,9 @@ class Station extends Model
     {
         return $this->hasOne(Experience::class);
     }
+
+    public function destination()
+    {
+        return $this->belongsTo(Destination::class);
+    }
 }

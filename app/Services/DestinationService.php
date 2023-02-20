@@ -63,9 +63,9 @@ class DestinationService extends Service
             $outputArr[$destination->id]['name'] = $destination->name;
             $outputArr[$destination->id]['lat'] = $destination->lat;
             $outputArr[$destination->id]['lng'] = $destination->lng;
-            $outputArr[$destination->id]['stations'] = $this->stationService->mapper($destination->stations);
+            $outputArr[$destination->id]['stations'] = $this->stationService->prepareStationsList($destination->stations);
         }
-        dd($outputArr);
+
         return $outputArr;
     }
 }
