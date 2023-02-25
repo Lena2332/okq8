@@ -9,11 +9,17 @@ use Illuminate\Http\Request;
 
 class BookingService extends Service
 {
-    // kWh
+    // capacity of our engine (kWh)
     const CAPACITY = 54;
 
     // Wh/km
     const SPENT = 177;
+
+    // How much charge should beleft after arrival
+    const RESERVE = 4;
+
+    // Charging type
+    const CHARGING = 22;
 
     private StationService $stationService;
 
@@ -56,27 +62,36 @@ class BookingService extends Service
             if ( isset($stationData[$k+1]) ) {
                 $end = $stationData[$k+1]['point'];
                 $nextDistance = $this->getDistance($start, $end);
+                $outputArr[$k]['distance'] = $nextDistance;
 
                 $outputArr[$k]['capacity_start'] = $startCapacity;
                 $outputArr[$k]['capacity_start_percent'] = $this->capacityToPercent($startCapacity);
 
-                //Calculate how many capacity without charging
-                $endCapacity = $this->getEndCapacity($startCapacity, $nextDistance);
+                //Calculate how much charge is needed for this distance
+                $neededCapacity = $this->getNeededCapacity($nextDistance);
+                $neededCapacityInPercent = $this->capacityToPercent($neededCapacity);
+                $outputArr[$k]['needed_capacity'] = $neededCapacity;
+                $outputArr[$k]['needed_capacity_percent'] = $neededCapacityInPercent;
 
-                //Calculate how many capacity with charging
-                $chargingCapacity = $this->getChargingCapacity($station['rest'], 22);
+                //Calculate how much charge do we get during stopping
+                $chargingCapacity = $this->getChargingCapacity($station['rest']);
                 $outputArr[$k]['charging_capacity'] = $chargingCapacity;
-                $finalCapacity = $endCapacity + $chargingCapacity;
-                $finalCapacity = ($finalCapacity > $this::CAPACITY) ? $this::CAPACITY : $finalCapacity;
 
-                $finalCapacityPercent = $this->capacityToPercent($finalCapacity);
+                $chargeBeforeNextTrip = $startCapacity + $chargingCapacity;
+                $chargeBeforeNextTripInPercent = $this->capacityToPercent($chargeBeforeNextTrip);
+                $outputArr[$k]['capacity_before_trip'] = $chargeBeforeNextTrip;
+                $outputArr[$k]['capacity_before_trip_percent'] = $chargeBeforeNextTripInPercent;
 
                 $outputArr[$k]['recommended_stops'] = [];
                 $outputArr[$k]['available_next'] = true;
-                if ( $finalCapacity <= 0) {
 
-                    $finalCapacity = 0;
-                    $finalCapacityPercent = 0;
+                $capacityDifference = $chargeBeforeNextTripInPercent - $neededCapacityInPercent;
+
+                if ( $capacityDifference <= $this::RESERVE ) {
+                    //Calculate recommended time of rest
+                    $needToCharge = $neededCapacity + $this::RESERVE - $startCapacity;
+                    $recommendedTime = $this->calculateRecommendedStopTime($needToCharge);
+                    $outputArr[$k]['recommended_time'] = $recommendedTime;
 
                     // Should suggest new destination between two stations
                     $sugestedStations = $this->stationService->findBetween( $station['lat'], $stationData[$k+1]['lat'] );
@@ -86,12 +101,22 @@ class BookingService extends Service
                     if ( !count($sugestedStations) ) {
                         $outputArr[$k]['available_next'] = false;
                     }
+
+                    $startCapacity = 0;
+                    $startCapacityInPercent = 0;
+                } else {
+
+                    $startCapacity = $chargeBeforeNextTrip - $neededCapacity;
+                    $startCapacityInPercent = $this->capacityToPercent($startCapacity);
+
                 }
-                $startCapacity = $finalCapacity;
-                $outputArr[$k]['capacity_end'] = $finalCapacity;
-                $outputArr[$k]['capacity_end_percent'] = $finalCapacityPercent;
+
+                $outputArr[$k]['capacity_end'] = $startCapacity;
+                $outputArr[$k]['capacity_end_percent'] = $startCapacityInPercent;
             }
         }
+
+        dd($outputArr);
 
         return $outputArr;
     }
@@ -102,28 +127,41 @@ class BookingService extends Service
         return intval($percentCap);
     }
 
-    private function getChargingCapacity( $time, $chargerType = 22 ): int
+    private function getChargingCapacity( $time ): int
     {
-        $chargerCap = ( $time / 60 ) * $chargerType * 2;
-
+        $chargerCap = ( $time / 60 ) * $this::CHARGING;
         return intval($chargerCap);
     }
 
-    private function getDistance( string $from, string $to )
+    /**
+     * @param string $from (coordinates or address)
+     * @param string $to (coordinates or address)
+     * @return int KM
+     */
+    private function getDistance( string $from, string $to ): int
     {
         $distance = google_distance($from, $to);
-
-        return $distance/1000;
+        return intval(round($distance/1000));
     }
 
     /**
      * @param $startCapacity
      * @param $destination
-     * @return end capacity before charging
+     * @return energy is needed for distance
      */
-    private function getEndCapacity ( $startCapacity, $destination ): int
+    private function getNeededCapacity ( $destination ): int
     {
         $wastedCapacity = ($this::SPENT * $destination) / 1000;
-        return intval(round($startCapacity - $wastedCapacity));
+        return intval(round($wastedCapacity));
+    }
+
+    /**
+     * @param int $needToCharge
+     * @return int time in minutes
+     */
+    private function calculateRecommendedStopTime(int $needToCharge): int
+    {
+        $time = ( $needToCharge/$this::CHARGING ) * 60;
+        return intval($time);
     }
 }
