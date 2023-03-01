@@ -65,12 +65,17 @@ class DestinationService extends Service
         $outputArr = [];
 
         foreach ( $destinations as $destination ) {
-            $outputArr[] = [
+            $stationData = $this->stationService->prepareStation($destination->stations->first());
+            $outputArr[]['stations'] = [
                 'id' => $destination->id,
                 'name' => $destination->name,
                 'lat' => $destination->lat,
                 'lng' => $destination->lng,
-                'stations' => $this->stationService->prepareStationsList($destination->stations)
+                'point' => $stationData['point'],
+                'possibilities' => $stationData['possibilities'],
+                'type' => $stationData['type'],
+                'experience' => $stationData['experience'],
+                'destination_id' => $stationData['destination_id'],
             ];
         }
 

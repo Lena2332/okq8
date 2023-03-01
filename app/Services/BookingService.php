@@ -116,8 +116,6 @@ class BookingService extends Service
             }
         }
 
-        dd($outputArr);
-
         return $outputArr;
     }
 

@@ -60,6 +60,20 @@ class StationService extends Service
         return $outputArr;
     }
 
+    public function prepareStation( $station )
+    {
+        $outputArr = [];
+        $stationData = $this->mapper($station);
+
+        $outputArr['possibilities'] = $stationData['possibilities'];
+        $outputArr['type'] = $stationData['type'];
+        $outputArr['experience'] = $stationData['experience'];
+        $outputArr['point'] = $stationData['point'];
+        $outputArr['destination_id'] = $stationData['destination_id'];
+
+        return $outputArr;
+    }
+
     private function mapper( $station, $withDestination = false ): array
     {
         $stationData = [];
