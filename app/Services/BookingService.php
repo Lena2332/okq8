@@ -63,7 +63,7 @@ class BookingService extends Service
                 $end = $stationData[$k+1]['point'];
                 $nextDistance = $this->getDistance($start, $end);
                 $outputArr[$k]['distance'] = $nextDistance;
-
+                $outputArr[$k]['destination_name'] = $station['name'];
                 $outputArr[$k]['capacity_start'] = $startCapacity;
                 $outputArr[$k]['capacity_start_percent'] = $this->capacityToPercent($startCapacity);
 
@@ -115,7 +115,7 @@ class BookingService extends Service
                 $outputArr[$k]['capacity_end_percent'] = $startCapacityInPercent;
             }
         }
-
+    
         return $outputArr;
     }
 
