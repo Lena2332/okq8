@@ -15,7 +15,7 @@ class BookingService extends Service
     // Wh/km
     const SPENT = 177;
 
-    // How much charge should beleft after arrival
+    // How much charge should be left after arrival
     const RESERVE = 4;
 
     // Charging type
@@ -102,8 +102,8 @@ class BookingService extends Service
                         $outputArr[$k]['available_next'] = false;
                     }
 
-                    $startCapacity = 0;
-                    $startCapacityInPercent = 0;
+                    $startCapacity = $this->getChargingCapacity($recommendedTime) + $this::RESERVE;
+                    $startCapacityInPercent = $this->capacityToPercent($startCapacity);
                 } else {
 
                     $startCapacity = $chargeBeforeNextTrip - $neededCapacity;
@@ -115,7 +115,7 @@ class BookingService extends Service
                 $outputArr[$k]['capacity_end_percent'] = $startCapacityInPercent;
             }
         }
-    
+
         return $outputArr;
     }
 
